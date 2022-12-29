@@ -1,0 +1,45 @@
+[extension_name]
+Generic Websocket Extension
+
+[extension_info]
+Written by: Amethyst Pixie
+
+[extesion_version]
+1.1.0
+
+[insert_external]
+<div>
+  <p>Sends a customized payload to a websocket server.</p>
+</div>
+
+[insert_command]
+SAMMI.extCommand('WebsocketMessage', color = 3355443, 52, {
+  wsUrl: ['wsUrl', 14, ''],
+  wsMessage: ['wsMessage', 0, '']
+});
+
+[insert_hook]
+case "WebsocketMessage": {
+  WebsocketMessage(SAMMIJSON.wsUrl, SAMMIJSON.wsMessage);
+} break
+
+[insert_script]
+function openWsSocket(url) {
+  if (!window.wsMessageQueue) window.wsMessageQueue = [];
+  if (!window.wsSocket || window.wsSocket.readyState === 3) {
+    window.wsSocket = new WebSocket(url);
+  } else if (window.wsSocket.readyState === 2) {
+    setTimeout(openWsSocket, 5000);
+  }
+}
+
+function WebsocketMessage(url, wsMessage) {
+  openWsSocket(url);
+  if (window.wsSocket && window.wsSocket.readyState == 1) {
+    window.wsSocket.send(wsMessage);
+  } else {
+    window.wsMessageQueue.push(wsMessage);
+  }
+};
+
+[insert_over]
